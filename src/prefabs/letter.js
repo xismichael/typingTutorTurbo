@@ -18,12 +18,11 @@ class Letter extends Phaser.GameObjects.Sprite {
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
 
-
         // Set texture
         this.setTexture(this.texture);
 
-        // Apply initial state behavior
-        this.applyState();
+        // Initialize state
+        this.initializeState();
     }
 
     getFrameIndex(char) {
@@ -32,27 +31,41 @@ class Letter extends Phaser.GameObjects.Sprite {
 
     randomColor() {
         let x = Math.floor(Math.random() * 10);
-        if (x % 2) {
-            return x - 1;
-        }
-
-        return x;
+        return x % 2 ? x - 1 : x;
     }
 
-    applyState() {
+    initializeState() {
         switch (this.state) {
             case "vanishing":
+                this.setFrame(this.defaultFrame);
                 this.fadeOutOverTime();
                 break;
             case "shielded":
-                this.shieldStrength = 10//Phaser.Math.Between(1, 10); // Needs multiple presses
-                this.setFrame(this.shieldFrame); // Start from the first shield frame
+                this.shieldStrength = Phaser.Math.Between(2, 8); // Needs multiple presses
+                this.setFrame(this.shieldFrame);
                 break;
             case "typed":
                 this.setFrame(this.typedFrame);
                 break;
             default:
                 this.setFrame(this.defaultFrame);
+                break;
+        }
+    }
+
+    applyState() {
+        switch (this.state) {
+            case "shielded":
+                this.hitShield();
+                break;
+            case "vanishing":
+                this.stopFadingAndRestore(); // Stop fading when typed
+                break;
+            case "normal":
+                this.state = "typed";
+                this.setFrame(this.typedFrame);
+                break;
+            default:
                 break;
         }
     }
@@ -77,51 +90,21 @@ class Letter extends Phaser.GameObjects.Sprite {
         this.setFrame(this.defaultFrame);
     }
 
-    // fadeOutOverTime() {
-    //     this.scene.tweens.add({
-    //         targets: this,
-    //         alpha: { from: 1, to: 0 },  // Fully transparent
-    //         duration: Phaser.Math.Between(3000, 6000),  // Time in milliseconds
-    //         ease: 'Linear',
-    //     });
-    // }
     fadeOutOverTime() {
-        this.scene.tweens.add({
+        this.fadeTween = this.scene.tweens.add({
             targets: this,
-            alpha: { from: this.alpha, to: 0 }, // Ensure a smooth transition
+            alpha: { from: this.alpha, to: 0 }, // Smooth transition
             duration: Phaser.Math.Between(3000, 6000),
             ease: 'Linear'
         });
     }
 
-
-
-    startVanishing() {
-        let fadeTime = Phaser.Math.Between(3000, 6000); // Random fade duration
-
-        this.scene.time.addEvent({
-            delay: fadeTime,
-            callback: () => {
-                this.setAlpha(0); // Make the letter invisible
-                this.state = "vanished"; // Update state
-                this.reappearAfterDelay();
-            },
-            loop: false
-        });
-    }
-
-    reappearAfterDelay() {
-        let reappearTime = Phaser.Math.Between(2000, 4000); // Time before reappearing
-
-        this.scene.time.addEvent({
-            delay: reappearTime,
-            callback: () => {
-                this.setAlpha(1); // Make the letter visible again
-                this.state = "normal"; // Reset state
-                this.startVanishing(); // Restart fading cycle
-            },
-            loop: false
-        });
+    stopFadingAndRestore() {
+        if (this.fadeTween) {
+            this.fadeTween.stop(); // Stop the fading tween
+        }
+        this.alpha = 1;
+        this.setState("normal");
     }
 
     setState(newState) {
@@ -137,3 +120,4 @@ class Letter extends Phaser.GameObjects.Sprite {
         return this.state === "typed";
     }
 }
+

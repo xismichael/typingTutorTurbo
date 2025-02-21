@@ -31,6 +31,6 @@ class Test extends Phaser.Scene {
         console.log(`Key Pressed: ${event.key.toUpperCase()}`);
 
         // Example: Triggering applyState() when any key is pressed
-        this.testLetter.fadeOutOverTime();
+        this.testLetter.applyState();
     }
 }
