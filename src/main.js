@@ -1,4 +1,4 @@
-
+//thwjgwgwkbwhgbw
 let config = {
     type: Phaser.AUTO,
     // width: Math.floor(window.innerWidth * 0.75),
