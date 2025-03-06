@@ -1,12 +1,13 @@
 //import Letter from "./Letter.js";
 
 class Word extends Phaser.GameObjects.Container {
-    constructor(scene, x, y, word, texture) {
+    constructor(scene, x, y, word, texture, underline) {
         super(scene, x, y);
 
         this.scene = scene;
         this.word = word.toUpperCase();
         this.letters = [];
+        this.underline = underline;
 
         let letterWidth = 100;
         //padding so that the word is always centered
@@ -20,7 +21,7 @@ class Word extends Phaser.GameObjects.Container {
             let state = Phaser.Math.RND.pick(["normal", "vanishing", "shielded"]);
 
             let letterX = padd + letterWidth * i;
-            let letter = new Letter(scene, letterX, 0, char, texture, state);
+            let letter = new Letter(scene, letterX, 0, char, texture, state, underline);
 
             this.letters.push(letter);
             this.add(letter);

@@ -1,25 +1,33 @@
 class Letter extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, char, texture, state = "normal") {
+    constructor(scene, x, y, char, texture, state = "normal", underline) {
         super(scene, x, y, texture);
 
         this.scene = scene;
         this.char = char.toUpperCase();
         this.state = state;
-        this.shieldStrength = 1;
-        this.texture = texture;
+        this.startingShieldStrength = Phaser.Math.Between(1, 7);
         this.alpha = 1;
+        this.defaultTexture = texture;
+        this.underline = underline;
+
+        this.totalFramesPerLetter = 13;
+        this.totalRegularFrames = 5;
+        this.totalShieldedFrames = 7;
+        this.typedFrameIndex = 12;
+        this.shieldedFrameIndex = 5;
+
 
         // Get frame index from sprite sheets
-        this.defaultFrame = this.getFrameIndex(this.char) * 11 + this.randomColor();
-        this.typedFrame = this.getFrameIndex(this.char) * 11 + 10;
-        this.shieldFrame = this.getFrameIndex(this.char) * 11 + this.randomColor() + 5;
+        this.defaultFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.randomColor();
+        this.typedFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.typedFrameIndex;
+        this.shieldFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.shieldedFrameIndex; //+ this.randomColor() 
 
         // Add sprite to scene
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
 
         // Set texture
-        this.setTexture(this.texture);
+        this.setTexture(this.defaultTexture);
 
         // Initialize state
         this.initializeState();
@@ -35,18 +43,16 @@ class Letter extends Phaser.GameObjects.Sprite {
 
     //random cllor
     randomColor() {
-        let x = Math.floor(Math.random() * 5);
-        return x;
+        return Math.floor(Math.random() * this.totalRegularFrames);
     }
 
     initializeState() {
         switch (this.state) {
             case "vanishing":
-                this.setFrame(this.defaultFrame);
                 this.fadeOut();
                 break;
             case "shielded":
-                this.shieldStrength = Phaser.Math.Between(2, 6); // Needs multiple presses
+                this.shieldStrength = this.startingShieldStrength; // Needs multiple presses
                 this.setFrame(this.shieldFrame);
                 break;
             case "typed":
@@ -76,35 +82,72 @@ class Letter extends Phaser.GameObjects.Sprite {
     }
 
     newShieldFrame() {
-        let newFrame = this.getFrameIndex(this.char) * 11 + this.randomColor() + 5;
+        let newFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.randomColor() + this.shieldedFrameIndex;
         while (this.shieldFrame == newFrame) {
-            newFrame = this.getFrameIndex(this.char) * 11 + this.randomColor() + 5;
+            newFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.randomColor() + this.shieldedFrameIndex;
         }
         return newFrame;
     }
 
     hitShield() {
-        if (this.state === "shielded") {
+
+        if (this.shieldStrength > 1) {
             this.shieldStrength--;
+            //console.log(`Shield hit! Remaining strength: ${this.shieldStrength}`);
 
-            // Update shield frame
-            this.shieldFrame = this.newShieldFrame();
+            // Update shield frame to indicate progress
+            this.setFrame(this.shieldFrame + this.shieldStrength);//+ Math.floor((this.startingShieldStrength - this.shieldStrength) * (this.totalShieldedFrames / this.startingShieldStrength)));
 
-            if (this.shieldStrength > 0) {
-                this.setFrame(this.shieldFrame);
-            } else {
-                this.removeShield();
-            }
+
+            // Restart the regeneration timer
+            this.startShieldRegenTimer();
+        } else {
+            this.removeShield();
         }
+
+        // if (this.state === "shielded") {
+        //     this.shieldStrength--;
+
+        //     // Update shield frame
+        //     this.shieldFrame = this.newShieldFrame();
+
+        //     if (this.shieldStrength > 0) {
+        //         this.setFrame(this.shieldFrame);
+        //     } else {
+        //         this.removeShield();
+        //     }
+        // }
+    }
+
+    startShieldRegenTimer() {
+        // Clear any existing timer to avoid overlap
+        if (this.regenTimer) {
+            this.regenTimer.remove(false);
+        }
+
+        // Set a timer for shield regeneration
+        this.regenTimer = this.scene.time.delayedCall(800, () => {
+            if (this.state === "shielded") {
+                this.shieldStrength = this.startingShieldStrength; // Reset shield to full strength
+                //console.log("Shield regenerated to full strength!");
+                this.setFrame(this.shieldFrame); // Reset shield frame
+            }
+        });
     }
 
     removeShield() {
         this.state = "normal";
+        //this.applyState();
         this.setFrame(this.defaultFrame);
+
     }
 
+
     fadeOut() {
-        this.alpha = 0;
+        this.setTexture(this.underline);
+        //this.setFrame(this.defaultFrame);
+
+        //this.alpha = 0;
 
         // for fadding out slowly, which is removed because can be abused
 
@@ -122,7 +165,10 @@ class Letter extends Phaser.GameObjects.Sprite {
         //     this.fadeTween.stop(); // Stop the fading tween
         // }
 
-        this.alpha = 1;
+        //this.alpha = 1;
+
+        this.setTexture(this.defaultTexture);
+        this.setFrame(this.defaultFrame);
         this.setState("normal");
     }
 

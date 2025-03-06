@@ -4,18 +4,26 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
-        // Load the test spritesheet for letter A
+        // Load the test spritesheet for letter
         this.load.spritesheet("testSpriteA", "./assets/A-Z.png", {
             frameWidth: 100,
             frameHeight: 100
         });
 
+        //Load underline
+        this.load.spritesheet("underline", "./assets/underline.png", {
+            frameWidth: 100,
+            frameHeight: 100
+        });
+
+        // Load the pointer
         this.load.spritesheet("pointer", "./assets/pointer.png", {
             frameWidth: 150,
             frameHeight: 100
 
         });
 
+        //load the wordlist
         this.load.json('wordList', './assets/wordlist.json');
     }
 
@@ -30,11 +38,11 @@ class Play extends Phaser.Scene {
         this.pointer = new Pointer(this, pointerBar / 2, 0, "pointer", row);
 
         //initialize starting 5 words 
-        this.testLetter1 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2, this.getRandomWord(), "testSpriteA");
-        this.testLetter2 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight, this.getRandomWord(), "testSpriteA");
-        this.testLetter3 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 2, this.getRandomWord(), "testSpriteA");
-        this.testLetter4 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 3, this.getRandomWord(), "testSpriteA");
-        this.testLetter5 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "testSpriteA");
+        this.testLetter1 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2, this.getRandomWord(), "testSpriteA", "underline");
+        this.testLetter2 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight, this.getRandomWord(), "testSpriteA", "underline");
+        this.testLetter3 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 2, this.getRandomWord(), "testSpriteA", "underline");
+        this.testLetter4 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 3, this.getRandomWord(), "testSpriteA", "underline");
+        this.testLetter5 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "testSpriteA", "underline");
 
         //enable keyboard interactions
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
@@ -80,7 +88,7 @@ class Play extends Phaser.Scene {
 
         // Leave the last row empty
         if (this.words.length < 5) {
-            new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "testSpriteA");
+            new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "testSpriteA", "underline");
         }
     }
 
