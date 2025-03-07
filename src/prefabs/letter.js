@@ -5,7 +5,7 @@ class Letter extends Phaser.GameObjects.Sprite {
         this.scene = scene;
         this.char = char.toUpperCase();
         this.state = state;
-        this.startingShieldStrength = Phaser.Math.Between(1, 7);
+        this.startingShieldStrength = Phaser.Math.Between(1, 6);
         this.alpha = 1;
         this.defaultTexture = texture;
         this.underline = underline;
@@ -20,7 +20,7 @@ class Letter extends Phaser.GameObjects.Sprite {
         // Get frame index from sprite sheets
         this.defaultFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.randomColor();
         this.typedFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.typedFrameIndex;
-        this.shieldFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.shieldedFrameIndex; //+ this.randomColor() 
+        this.shieldFrame = this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.shieldedFrameIndex + this.startingShieldStrength; //+ this.randomColor() 
 
         // Add sprite to scene
         this.scene.add.existing(this);
@@ -91,12 +91,12 @@ class Letter extends Phaser.GameObjects.Sprite {
 
     hitShield() {
 
-        if (this.shieldStrength > 1) {
+        if (this.shieldStrength > 0) {
             this.shieldStrength--;
             //console.log(`Shield hit! Remaining strength: ${this.shieldStrength}`);
 
             // Update shield frame to indicate progress
-            this.setFrame(this.shieldFrame + this.shieldStrength);//+ Math.floor((this.startingShieldStrength - this.shieldStrength) * (this.totalShieldedFrames / this.startingShieldStrength)));
+            this.setFrame(this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.shieldedFrameIndex + this.shieldStrength);//+ Math.floor((this.startingShieldStrength - this.shieldStrength) * (this.totalShieldedFrames / this.startingShieldStrength)));
 
 
             // Restart the regeneration timer
