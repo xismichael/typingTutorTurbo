@@ -49,11 +49,19 @@ class Word extends Phaser.GameObjects.Container {
 
         // Check if the typed key matches the first untyped letter
         if (firstUntypedLetter.char !== key) {
+            //!!!!!!!!
+            //INSERT LETTER MISS SOUND
+            //!!!!!!!!
+
             //handle miss, score count, etc
             //to be implemented
             console.log(`Missed letter: ${key}. Expected: ${firstUntypedLetter.char}`);
             return;
         }
+
+        //!!!!!!!!
+        //INSERT LETTER HIT SOUND
+        //!!!!!!!!
 
         let swapped = false;
 

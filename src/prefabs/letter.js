@@ -136,6 +136,13 @@ class Letter extends Phaser.GameObjects.Sprite {
     }
 
     removeShield() {
+
+
+        //!!!!!!!!
+        //INSERT SIELD BREAKING SOUND
+        //!!!!!!!!
+
+
         this.state = "normal";
         //this.applyState();
         this.setFrame(this.defaultFrame);

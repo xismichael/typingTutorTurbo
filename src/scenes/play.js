@@ -53,10 +53,20 @@ class Play extends Phaser.Scene {
 
         // Handle pointer movement
         if (key === "ARROWUP") {
+
+            //!!!!!!!!
+            //INSERT POINTER MOVE SOUND
+            //!!!!!!!!
+
             this.pointer.moveUp();
             return;
         }
         else if (key === "ARROWDOWN") {
+
+            //!!!!!!!!
+            //INSERT POINTER MOVE SOUND
+            //!!!!!!!!
+
             this.pointer.moveDown();
             return;
         }
@@ -88,6 +98,13 @@ class Play extends Phaser.Scene {
 
         // Leave the last row empty
         if (this.words.length < 5) {
+
+
+            //!!!!!!!!
+            //INSERT NEW/DESTROY WORD SOUND
+            //!!!!!!!!
+
+
             new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "testSpriteA", "underline");
         }
     }
