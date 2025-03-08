@@ -1,4 +1,4 @@
-class Play extends Phaser.Scene {
+class Play extends Phaser.Scene {     
     constructor() {
         super("playScene");
     }
@@ -20,16 +20,30 @@ class Play extends Phaser.Scene {
         this.load.spritesheet("pointer", "./assets/pointer.png", {
             frameWidth: 150,
             frameHeight: 100
-
         });
 
         //load the wordlist
         this.load.json('wordList', './assets/wordlist.json');
+
+        // Load sound effects
+        this.load.audio("shieldBreak", "assets/shieldbreak.mp3");
+        this.load.audio("letterMiss", "assets/lettermiss.mp3");
+        this.load.audio("letterHit", "assets/letterhit.mp3");
+        this.load.audio("pointerMove", "assets/pointermove.mp3");
+        this.load.audio("wordComplete", "assets/wordcomplete.mp3");
     }
 
     create() {
         this.wordList = this.cache.json.get('wordList');
 
+        // Create sound effect objects
+        this.sfx = {
+            shieldBreak: this.sound.add("shieldBreak"),
+            letterMiss: this.sound.add("letterMiss"),
+            letterHit: this.sound.add("letterHit"),
+            pointerMove: this.sound.add("pointerMove"),
+            wordComplete: this.sound.add("wordComplete")
+        };
 
         //initialize letter Y positions
         let row = [letterBoxY + letterBoxHeight / 2, letterBoxY + letterBoxHeight / 2 + letterBoxHeight, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 2, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 3, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4];
@@ -54,18 +68,14 @@ class Play extends Phaser.Scene {
         // Handle pointer movement
         if (key === "ARROWUP") {
 
-            //!!!!!!!!
-            //INSERT POINTER MOVE SOUND
-            //!!!!!!!!
+ 
 
             this.pointer.moveUp();
             return;
         }
         else if (key === "ARROWDOWN") {
 
-            //!!!!!!!!
-            //INSERT POINTER MOVE SOUND
-            //!!!!!!!!
+  
 
             this.pointer.moveDown();
             return;
@@ -100,9 +110,7 @@ class Play extends Phaser.Scene {
         if (this.words.length < 5) {
 
 
-            //!!!!!!!!
-            //INSERT NEW/DESTROY WORD SOUND
-            //!!!!!!!!
+ 
 
 
             new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "testSpriteA", "underline");
@@ -114,6 +122,4 @@ class Play extends Phaser.Scene {
         let randomIndex = Math.floor(Math.random() * this.wordList.length);
         return this.wordList[randomIndex];
     }
-
-
 }

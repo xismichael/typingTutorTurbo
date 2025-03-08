@@ -23,6 +23,8 @@ class Pointer extends Phaser.GameObjects.Sprite {
             this.currentRow--;
         }
         this.y = this.wordRows[this.currentRow];
+
+        this.scene.sfx.pointerMove.play();
     }
 
     moveDown() {
@@ -33,10 +35,11 @@ class Pointer extends Phaser.GameObjects.Sprite {
             this.currentRow++;
         }
         this.y = this.wordRows[this.currentRow];
+
+        this.scene.sfx.pointerMove.play();
     }
 
     getCurrentY() {
         return this.y;
     }
 }
-

@@ -96,7 +96,7 @@ class Letter extends Phaser.GameObjects.Sprite {
             //console.log(`Shield hit! Remaining strength: ${this.shieldStrength}`);
 
             // Update shield frame to indicate progress
-            this.setFrame(this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.shieldedFrameIndex + this.shieldStrength);//+ Math.floor((this.startingShieldStrength - this.shieldStrength) * (this.totalShieldedFrames / this.startingShieldStrength)));
+            this.setFrame(this.getFrameIndex(this.char) * this.totalFramesPerLetter + this.shieldedFrameIndex + this.shieldStrength);//+ Math.floor((this.startingShieldStrength - this.shieldStrength) * (this.totalShieldedFrames / this.startingShieldStrength));
 
 
             // Restart the regeneration timer
@@ -141,7 +141,7 @@ class Letter extends Phaser.GameObjects.Sprite {
         //!!!!!!!!
         //INSERT SIELD BREAKING SOUND
         //!!!!!!!!
-
+        this.scene.sfx.shieldBreak.play();
 
         this.state = "normal";
         //this.applyState();
@@ -213,4 +213,3 @@ class Letter extends Phaser.GameObjects.Sprite {
         });
     }
 }
-
