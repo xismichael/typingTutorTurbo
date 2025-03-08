@@ -46,7 +46,13 @@ class Play extends Phaser.Scene {
         };
 
         //initialize letter Y positions
-        let row = [letterBoxY + letterBoxHeight / 2, letterBoxY + letterBoxHeight / 2 + letterBoxHeight, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 2, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 3, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4];
+        let row = [
+            letterBoxY + letterBoxHeight / 2, 
+            letterBoxY + letterBoxHeight / 2 + letterBoxHeight, 
+            letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 2, 
+            letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 3, 
+            letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4
+        ];
 
         //initialize pointer
         this.pointer = new Pointer(this, pointerBar / 2, 0, "pointer", row);
@@ -60,6 +66,17 @@ class Play extends Phaser.Scene {
 
         //enable keyboard interactions
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
+
+        // timer
+        this.timeRemaining = 180;
+        this.timerText = this.add.text(20, 20, "Time: 3:00", { font: "48px Bangers", fill: "#ffffff" });
+        this.timerText.setPadding({ left: 0, right: 10, top: 0, bottom: 0 });
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.updateTimer,
+            callbackScope: this,
+            loop: true
+        });
     }
 
     handleKeyPress(event) {
@@ -67,23 +84,16 @@ class Play extends Phaser.Scene {
 
         // Handle pointer movement
         if (key === "ARROWUP") {
-
- 
-
             this.pointer.moveUp();
             return;
         }
         else if (key === "ARROWDOWN") {
-
-  
-
             this.pointer.moveDown();
             return;
         }
 
         // Handle letter input only for the word at the pointer position
         let wordAtPointer = this.words.find(word => word.y === this.pointer.getCurrentY());
-
         if (wordAtPointer) {
             wordAtPointer.handleKeyPress(event);
         }
@@ -93,7 +103,6 @@ class Play extends Phaser.Scene {
 
     }
 
-    //function for repositioning words after the word is complete
     repositionWords() {
         // Reposition remaining words to the first 4 rows
         this.words.forEach((word, index) => {
@@ -105,21 +114,24 @@ class Play extends Phaser.Scene {
                 ease: "Power2"
             });
         });
-
         // Leave the last row empty
         if (this.words.length < 5) {
-
-
- 
-
-
             new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "testSpriteA", "underline");
         }
     }
 
-    //get a random word from wordlist
     getRandomWord() {
         let randomIndex = Math.floor(Math.random() * this.wordList.length);
         return this.wordList[randomIndex];
+    }
+
+    updateTimer() {
+        this.timeRemaining--;
+        let minutes = Math.floor(this.timeRemaining / 60);
+        let seconds = this.timeRemaining % 60;
+        this.timerText.setText("Time: " + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds));
+        if (this.timeRemaining <= 0) {
+            this.scene.start("loserScene");
+        }
     }
 }
