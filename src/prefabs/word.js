@@ -49,19 +49,14 @@ class Word extends Phaser.GameObjects.Container {
 
         // Check if the typed key matches the first untyped letter
         if (firstUntypedLetter.char !== key) {
-            //!!!!!!!!
-            //INSERT LETTER MISS SOUND
-            //!!!!!!!!
+            //letter miss
             this.scene.sfx.letterMiss.play();
-            //handle miss, score count, etc
-            //to be implemented
-            console.log(`Missed letter: ${key}. Expected: ${firstUntypedLetter.char}`);
+            this.scene.losePoints(10);
+            //console.log(`Missed letter: ${key}. Expected: ${firstUntypedLetter.char}`);
             return;
         }
 
-        //!!!!!!!!
-        //INSERT LETTER HIT SOUND
-        //!!!!!!!!
+        //letter hit sound
         this.scene.sfx.letterHit.play();
 
         let swapped = false;
@@ -91,10 +86,9 @@ class Word extends Phaser.GameObjects.Container {
             firstUntypedLetter.applyState();
 
             if (this.isTyped()) {
-                //!!!!!!!!
-                //INSERT WORD COMPLETED SOUND
-                //!!!!!!!!
+                //when word is typed
                 this.scene.sfx.wordComplete.play();
+                this.scene.addPoints(50);
                 this.removeWord();
             }
         }

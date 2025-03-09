@@ -73,6 +73,7 @@ class Letter extends Phaser.GameObjects.Sprite {
                 this.stopFadingAndRestore();
                 break;
             case "normal":
+                this.scene.addPoints(10);
                 this.state = "typed";
                 this.setFrame(this.typedFrame);
                 break;
@@ -93,6 +94,7 @@ class Letter extends Phaser.GameObjects.Sprite {
 
         if (this.shieldStrength > 0) {
             this.shieldStrength--;
+            this.scene.addPoints(1);
             //console.log(`Shield hit! Remaining strength: ${this.shieldStrength}`);
 
             // Update shield frame to indicate progress
@@ -136,17 +138,10 @@ class Letter extends Phaser.GameObjects.Sprite {
     }
 
     removeShield() {
-
-
-        //!!!!!!!!
-        //INSERT SIELD BREAKING SOUND
-        //!!!!!!!!
         this.scene.sfx.shieldBreak.play();
-
+        this.scene.addPoints(20);
         this.state = "normal";
-        //this.applyState();
         this.setFrame(this.defaultFrame);
-
     }
 
 
