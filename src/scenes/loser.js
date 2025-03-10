@@ -4,7 +4,7 @@ class Loser extends Phaser.Scene {
   }
 
   preload() {
-    // Load your background or "loser" image
+    // Load loserscreen image
     this.load.image('loser', './assets/loserscreen.png');
   }
 
@@ -13,10 +13,10 @@ class Loser extends Phaser.Scene {
     let centerX = this.cameras.main.width / 2;
     let centerY = this.cameras.main.height / 2;
 
-    // Display the "game over" background image (if you want it to fill the screen, adjust accordingly)
+    
     this.add.image(centerX, centerY, 'loser').setOrigin(0.5);
 
-    // Create a multi-line text string with the player's stats
+  
     let statsText = 
       `Total Points: ${data.score}\n` +
       `Words Completed: ${data.wordsCompleted}\n` +
@@ -39,14 +39,14 @@ class Loser extends Phaser.Scene {
         stroke: true,
         fill: true
       },
-      lineSpacing: 20              // Extra space between lines
+      lineSpacing: 20              
     };
 
-    // Display the stats in the middle of the screen
+    // stats display
     let statsDisplay = this.add.text(centerX, centerY - 50, statsText, statsStyle);
     statsDisplay.setOrigin(0.5);
 
-    // Smaller text style for instructions
+  
     let instructionStyle = {
       fontFamily: 'Comic Sans MS',
       fontSize: '36px',
@@ -64,11 +64,11 @@ class Loser extends Phaser.Scene {
       }
     };
 
-    // Display instruction to restart the game (below the stats)
+    // space to play again
     let instructionText = this.add.text(centerX, centerY + 200, "Press SPACE to play again", instructionStyle);
     instructionText.setOrigin(0.5);
 
-    // Listen for the SPACE key to return to the menu
+    // space to return to menu
     this.input.keyboard.once("keydown-SPACE", () => {
       this.scene.start("menuScene");
     });

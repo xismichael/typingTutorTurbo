@@ -57,39 +57,34 @@ class Play extends Phaser.Scene {
             this.bgMusic = this.sound.get("backgroundMusic");
         }
 
-        // -------------------------------
-        // STAT TRACKING VIA SOUND EFFECTS
-        // -------------------------------
+
         // Initialize counters
         this.shieldsBroken = 0;
         this.wordsCompleted = 0;
         this.typosMade = 0;
 
-        // Whenever shieldBreak sound plays, increment shieldsBroken
+        // when shieldBreak sound plays increment shieldsBroken
         this.sfx.shieldBreak.on('play', () => {
             this.shieldsBroken++;
         });
 
-        // Whenever wordComplete sound plays, increment wordsCompleted
+        // when wordComplete sound plays increment wordsCompleted
         this.sfx.wordComplete.on('play', () => {
             this.wordsCompleted++;
         });
 
-        // Whenever letterMiss sound plays, increment typosMade
+        // when letterMiss sound plays increment typosMade
         this.sfx.letterMiss.on('play', () => {
             this.typosMade++;
         });
-        // (You could also track letterHit if you want, in the same way.)
+      
 
-        // -------------------------------
-        // SCORE & COMBO (TRADITIONAL WAY)
-        // -------------------------------
+ 
         this.score = 0;
         this.combo = 1;
         this.maxCombo = 2;
 
-        // Use your pre-defined layout variables
-        // Make sure these are declared globally or in a config file:
+    
         //    letterBoxX, letterBoxY, letterBoxHeight, pointerBar, UIbar, gameWidth, gameHeight
         let row = [
             letterBoxY + letterBoxHeight / 2,
@@ -99,10 +94,10 @@ class Play extends Phaser.Scene {
             letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4
         ];
 
-        // Initialize pointer (assumes Pointer class is defined)
+        // Initialize pointer 
         this.pointer = new Pointer(this, pointerBar / 2, 0, "pointer", row);
 
-        // Create 5 words at original positions (assumes Word class is defined)
+        // Create 5 words at original positions 
         this.testLetter1 = new Word(this, letterBoxX + 50, row[0], this.getRandomWord(), "letterSheet", "underline");
         this.testLetter2 = new Word(this, letterBoxX + 50, row[1], this.getRandomWord(), "letterSheet", "underline");
         this.testLetter3 = new Word(this, letterBoxX + 50, row[2], this.getRandomWord(), "letterSheet", "underline");
@@ -111,7 +106,7 @@ class Play extends Phaser.Scene {
 
         this.words = [this.testLetter1, this.testLetter2, this.testLetter3, this.testLetter4, this.testLetter5];
 
-        // Enable keyboard interactions
+        // Enable keyboard 
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
 
         // 3 Minute Timer
@@ -166,7 +161,7 @@ class Play extends Phaser.Scene {
     }
 
     update() {
-        // Additional update logic if needed
+        
     }
 
     repositionWords() {
@@ -198,7 +193,7 @@ class Play extends Phaser.Scene {
         return this.wordList[randomIndex];
     }
 
-    // Traditional scoring logic
+    //  scoring logic
     addPoints(points) {
         this.score += Math.floor(points * this.combo);
         this.combo = Math.min(this.combo + 0.1, this.maxCombo);
