@@ -87,8 +87,6 @@ class Word extends Phaser.GameObjects.Container {
 
             if (this.isTyped()) {
                 //when word is typed
-                this.scene.sfx.wordComplete.play();
-                this.scene.addPoints(50);
                 this.removeWord();
             }
         }
@@ -96,6 +94,8 @@ class Word extends Phaser.GameObjects.Container {
 
 
     removeWord() {
+        this.scene.sfx.wordComplete.play();
+        this.scene.addPoints(50);
         // Remove the word from the scene's active words list
         this.scene.words = this.scene.words.filter(w => w !== this);
         // Destroy the word
