@@ -94,7 +94,7 @@ class Letter extends Phaser.GameObjects.Sprite {
 
         if (this.shieldStrength > 0) {
             this.shieldStrength--;
-            this.scene.addPoints(1);
+            this.scene.addPoints(0.5);
             //console.log(`Shield hit! Remaining strength: ${this.shieldStrength}`);
 
             // Update shield frame to indicate progress

@@ -192,7 +192,7 @@ class Play extends Phaser.Scene {
     //  scoring logic
     addPoints(points) {
         this.score += Math.floor(points * this.combo);
-        this.combo = Math.min(this.combo + 0.1, this.maxCombo);
+        this.combo = Math.min(this.combo + 0.05, this.maxCombo);
         this.updateScoreText();
     }
 
