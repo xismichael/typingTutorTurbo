@@ -10,7 +10,7 @@ class Play extends Phaser.Scene {
             frameHeight: 100
         });
 
-        //Load underline
+        // Load underline
         this.load.spritesheet("underline", "./assets/underline.png", {
             frameWidth: 100,
             frameHeight: 100
@@ -22,7 +22,7 @@ class Play extends Phaser.Scene {
             frameHeight: 100
         });
 
-        //load the wordlist
+        // Load the wordlist
         this.load.json('wordList', './assets/wordlist.json');
 
         // Load sound effects
@@ -31,21 +31,66 @@ class Play extends Phaser.Scene {
         this.load.audio("letterHit", "assets/letterhit.mp3");
         this.load.audio("pointerMove", "assets/pointermove.mp3");
         this.load.audio("wordComplete", "assets/wordcomplete.mp3");
+
+        // Load background music
+        this.load.audio("backgroundMusic", "assets/backgroundmusic.mp3");
     }
 
     create() {
+        // Retrieve the word list from the JSON file
         this.wordList = this.cache.json.get('wordList');
 
         // Create sound effect objects
         this.sfx = {
             shieldBreak: this.sound.add("shieldBreak"),
-            letterMiss: this.sound.add("letterMiss"),
+            letterMiss: this.sound.add("letterMiss", { volume: 0.3 }),
             letterHit: this.sound.add("letterHit"),
-            pointerMove: this.sound.add("pointerMove"),
+            pointerMove: this.sound.add("pointerMove", { volume: 0.4 }),
             wordComplete: this.sound.add("wordComplete")
         };
 
-        //initialize letter Y positions
+        // Start background music if not already playing
+        if (!this.sound.get("backgroundMusic")) {
+            this.bgMusic = this.sound.add("backgroundMusic", { loop: true, volume: 0.2 });
+            this.bgMusic.play();
+        } else {
+            this.bgMusic = this.sound.get("backgroundMusic");
+        }
+
+        // -------------------------------
+        // STAT TRACKING VIA SOUND EFFECTS
+        // -------------------------------
+        // Initialize counters
+        this.shieldsBroken = 0;
+        this.wordsCompleted = 0;
+        this.typosMade = 0;
+
+        // Whenever shieldBreak sound plays, increment shieldsBroken
+        this.sfx.shieldBreak.on('play', () => {
+            this.shieldsBroken++;
+        });
+
+        // Whenever wordComplete sound plays, increment wordsCompleted
+        this.sfx.wordComplete.on('play', () => {
+            this.wordsCompleted++;
+        });
+
+        // Whenever letterMiss sound plays, increment typosMade
+        this.sfx.letterMiss.on('play', () => {
+            this.typosMade++;
+        });
+        // (You could also track letterHit if you want, in the same way.)
+
+        // -------------------------------
+        // SCORE & COMBO (TRADITIONAL WAY)
+        // -------------------------------
+        this.score = 0;
+        this.combo = 1;
+        this.maxCombo = 2;
+
+        // Use your pre-defined layout variables
+        // Make sure these are declared globally or in a config file:
+        //    letterBoxX, letterBoxY, letterBoxHeight, pointerBar, UIbar, gameWidth, gameHeight
         let row = [
             letterBoxY + letterBoxHeight / 2,
             letterBoxY + letterBoxHeight / 2 + letterBoxHeight,
@@ -54,42 +99,29 @@ class Play extends Phaser.Scene {
             letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4
         ];
 
-        //initialize pointer
+        // Initialize pointer (assumes Pointer class is defined)
         this.pointer = new Pointer(this, pointerBar / 2, 0, "pointer", row);
 
-        //initialize starting 5 words 
-        this.testLetter1 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2, this.getRandomWord(), "letterSheet", "underline");
-        this.testLetter2 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight, this.getRandomWord(), "letterSheet", "underline");
-        this.testLetter3 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 2, this.getRandomWord(), "letterSheet", "underline");
-        this.testLetter4 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 3, this.getRandomWord(), "letterSheet", "underline");
-        this.testLetter5 = new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "letterSheet", "underline");
+        // Create 5 words at original positions (assumes Word class is defined)
+        this.testLetter1 = new Word(this, letterBoxX + 50, row[0], this.getRandomWord(), "letterSheet", "underline");
+        this.testLetter2 = new Word(this, letterBoxX + 50, row[1], this.getRandomWord(), "letterSheet", "underline");
+        this.testLetter3 = new Word(this, letterBoxX + 50, row[2], this.getRandomWord(), "letterSheet", "underline");
+        this.testLetter4 = new Word(this, letterBoxX + 50, row[3], this.getRandomWord(), "letterSheet", "underline");
+        this.testLetter5 = new Word(this, letterBoxX + 50, row[4], this.getRandomWord(), "letterSheet", "underline");
 
-        //enable keyboard interactions
+        this.words = [this.testLetter1, this.testLetter2, this.testLetter3, this.testLetter4, this.testLetter5];
+
+        // Enable keyboard interactions
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
 
-        // timer
-        this.timeRemaining = 180;
-        this.timerText = this.add.text(pointerBar / 2, UIbar / 2, "Time: 3:00", { font: "64px Bangers", fill: "#ffffff" });
-        //this.timerText.setPadding({ left: 0, right: 10, top: 0, bottom: 0 });
-        this.time.addEvent({
-            delay: 1000,
-            callback: this.updateTimer,
-            callbackScope: this,
-            loop: true
-        });
-
-        //initialize score keeping and combo multiplier
-        this.score = 0;
-        this.combo = 1;
-        this.maxCombo = 2;
-
-        //add score text
-        let scoreTextConfog = {
-            fontFamily: 'Comic Sans MS, Arial, sans-serif', // Fun and inviting font
-            fontSize: '64px',  // Large and playful
-            color: '#FF6F61',  // Bright coral color
-            stroke: '#FFFFFF',  // White stroke around text
-            strokeThickness: 6, // Thickness of the stroke
+        // 3 Minute Timer
+        this.timeRemaining = 16;
+        let commonTextConfig = {
+            fontFamily: 'Comic Sans MS, Arial, sans-serif',
+            fontSize: '64px',
+            color: '#FF6F61',
+            stroke: '#FFFFFF',
+            strokeThickness: 6,
             shadow: {
                 offsetX: 3,
                 offsetY: 3,
@@ -101,27 +133,40 @@ class Play extends Phaser.Scene {
             align: 'center'
         };
 
-        this.scoreText = this.add.text(gameWidth / 2, UIbar / 2, `Score: ${this.score}`, scoreTextConfog).setOrigin(0, 0);
+        // Create Timer Text
+        this.timerText = this.add.text(pointerBar / 2, UIbar / 2, "Time: 3:00", commonTextConfig).setOrigin(0, 0);
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.updateTimer,
+            callbackScope: this,
+            loop: true
+        });
+
+        // Create Score Text
+        this.scoreText = this.add.text(gameWidth / 2, UIbar / 2, `Score: ${this.score}`, commonTextConfig).setOrigin(0, 0);
     }
 
     handleKeyPress(event) {
         let key = event.key.toUpperCase();
 
-        // Handle pointer movement
+        // Pointer movement
         if (key === "ARROWUP") {
             this.pointer.moveUp();
             return;
-        }
-        else if (key === "ARROWDOWN") {
+        } else if (key === "ARROWDOWN") {
             this.pointer.moveDown();
             return;
         }
 
-        // Handle letter input only for the word at the pointer position
+        // Letter input for the word at pointer position
         let wordAtPointer = this.words.find(word => word.y === this.pointer.getCurrentY());
         if (wordAtPointer) {
             wordAtPointer.handleKeyPress(event);
         }
+    }
+
+    update() {
+        // Additional update logic if needed
     }
 
     repositionWords() {
@@ -135,9 +180,16 @@ class Play extends Phaser.Scene {
                 ease: "Power2"
             });
         });
-        // Leave the last row empty
+        // If fewer than 5 words remain, add a new word in the bottom row
         if (this.words.length < 5) {
-            new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "letterSheet", "underline");
+            new Word(
+                this,
+                letterBoxX + 50,
+                letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4,
+                this.getRandomWord(),
+                "letterSheet",
+                "underline"
+            );
         }
     }
 
@@ -146,6 +198,7 @@ class Play extends Phaser.Scene {
         return this.wordList[randomIndex];
     }
 
+    // Traditional scoring logic
     addPoints(points) {
         this.score += Math.floor(points * this.combo);
         this.combo = Math.min(this.combo + 0.1, this.maxCombo);
@@ -168,7 +221,15 @@ class Play extends Phaser.Scene {
         let seconds = this.timeRemaining % 60;
         this.timerText.setText("Time: " + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds));
         if (this.timeRemaining <= 0) {
-            this.scene.start("loserScene");
+            // Pass stats to Loser scene
+            this.scene.start("loserScene", {
+                score: this.score,
+                wordsCompleted: this.wordsCompleted,
+                shieldsBroken: this.shieldsBroken,
+                typosMade: this.typosMade
+            });
         }
     }
 }
+
+window.Play = Play;
