@@ -94,7 +94,7 @@ class Letter extends Phaser.GameObjects.Sprite {
 
         if (this.shieldStrength > 0) {
             this.shieldStrength--;
-            this.scene.addPoints(1);
+            this.scene.addPoints(0.5);
             //console.log(`Shield hit! Remaining strength: ${this.shieldStrength}`);
 
             // Update shield frame to indicate progress
@@ -128,7 +128,7 @@ class Letter extends Phaser.GameObjects.Sprite {
         }
 
         // Set a timer for shield regeneration
-        this.regenTimer = this.scene.time.delayedCall(800, () => {
+        this.regenTimer = this.scene.time.delayedCall(500, () => {
             if (this.state === "shielded") {
                 this.shieldStrength = this.startingShieldStrength; // Reset shield to full strength
                 //console.log("Shield regenerated to full strength!");

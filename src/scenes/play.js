@@ -77,14 +77,14 @@ class Play extends Phaser.Scene {
         this.sfx.letterMiss.on('play', () => {
             this.typosMade++;
         });
-      
 
- 
+
+
         this.score = 0;
         this.combo = 1;
         this.maxCombo = 2;
 
-    
+
         //    letterBoxX, letterBoxY, letterBoxHeight, pointerBar, UIbar, gameWidth, gameHeight
         let row = [
             letterBoxY + letterBoxHeight / 2,
@@ -110,7 +110,7 @@ class Play extends Phaser.Scene {
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
 
         // 3 Minute Timer
-        this.timeRemaining = 30;
+        this.timeRemaining = 180;
         let commonTextConfig = {
             fontFamily: 'Comic Sans MS, Arial, sans-serif',
             fontSize: '64px',
@@ -129,7 +129,7 @@ class Play extends Phaser.Scene {
         };
 
         // Create Timer Text
-        this.timerText = this.add.text(pointerBar / 2, UIbar / 2, "Time: 3:00", commonTextConfig).setOrigin(0, 0);
+        this.timerText = this.add.text(pointerBar / 2, UIbar / 2, "Time: 2:00", commonTextConfig).setOrigin(0, 0);
         this.time.addEvent({
             delay: 1000,
             callback: this.updateTimer,
@@ -158,10 +158,6 @@ class Play extends Phaser.Scene {
         if (wordAtPointer) {
             wordAtPointer.handleKeyPress(event);
         }
-    }
-
-    update() {
-        
     }
 
     repositionWords() {
@@ -196,7 +192,7 @@ class Play extends Phaser.Scene {
     //  scoring logic
     addPoints(points) {
         this.score += Math.floor(points * this.combo);
-        this.combo = Math.min(this.combo + 0.1, this.maxCombo);
+        this.combo = Math.min(this.combo + 0.05, this.maxCombo);
         this.updateScoreText();
     }
 
@@ -210,6 +206,7 @@ class Play extends Phaser.Scene {
         this.scoreText.setText(`Score: ${this.score}`);
     }
 
+    //Timper update
     updateTimer() {
         this.timeRemaining--;
         let minutes = Math.floor(this.timeRemaining / 60);
