@@ -14,9 +14,9 @@ let config = {
             debug: false
         }
     },
-    scene: [Menu, Play, Loser],
+    scene: [Menu, Play, Instructions, Loser],
     scale: {
-        autoCenter: Phaser.Scale.CENTER_BOTH // Centers the game on the screen
+        autoCenter: Phaser.Scale.CENTER_BOTH // centers the game on the screen
     }
 };
 

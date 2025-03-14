@@ -110,7 +110,7 @@ class Play extends Phaser.Scene {
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
 
         // 3 Minute Timer
-        this.timeRemaining = 16;
+        this.timeRemaining = 30;
         let commonTextConfig = {
             fontFamily: 'Comic Sans MS, Arial, sans-serif',
             fontSize: '64px',

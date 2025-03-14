@@ -1,52 +1,74 @@
 class Menu extends Phaser.Scene {
-  constructor() {
-      super({ key: 'menuScene' });
-  }
-
-  preload() {
-      this.load.image('menu', './assets/menu.png');
-  }
-
-  create() {
-      // Calculate the center of the screen
-      let centerX = this.cameras.main.width / 2;
-      let centerY = this.cameras.main.height / 2;
-
-      let bg = this.add.image(centerX, centerY, 'menu').setOrigin(0.5, 0.5);
-      bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
-
-      // Text content
-      let instructions = 
-          "Typing Tutor Turbo\n\n" +
-          "Instructions:\n" +
-          "Type the words correctly!\n" +
-          "Beware of Shields!\n\n"+
-          "Press SPACE to start!";
-
-      let instructionText = this.add.text(centerX-10, centerY + 150, instructions, {
-          fontFamily: 'Comic Sans MS',   
-          fontSize: '36px',
-          fill: '#ffffff',               
-          align: 'center'
-      });
-      instructionText.setOrigin(0.5);
-
-      
-      let gradient = instructionText.context.createLinearGradient(0, 0, instructionText.width, 0);
-      gradient.addColorStop(0, '#ff0000');
-      gradient.addColorStop(0.2, '#ffff00');
-      gradient.addColorStop(0.4, '#00ff00');
-      gradient.addColorStop(0.6, '#00ffff');
-      gradient.addColorStop(0.8, '#0000ff');
-      gradient.addColorStop(1, '#ff00ff');
-
-      instructionText.setFill(gradient);
-
-      // press space to start
-      this.input.keyboard.on("keydown-SPACE", () => {
-          this.scene.start("playScene");
-      });
-  }
+    constructor() {
+        super({ key: 'menuScene' });
+    }
+  
+    preload() {
+        this.load.image('menu', './assets/menu.png');
+        this.load.spritesheet('letters', './assets/A-Z.png', { frameWidth: 100, frameHeight: 100 });
+    }
+  
+    create() {
+        let centerX = this.cameras.main.width / 2;
+        let centerY = this.cameras.main.height / 2;
+  
+        let bg = this.add.image(centerX, centerY, 'menu').setOrigin(0.5, 0.5);
+        bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+  
+        // space and I keys with fade-out transitions
+        this.input.keyboard.on("keydown-SPACE", () => {
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start("playScene");
+            });
+        });
+        this.input.keyboard.on("keydown-I", () => {
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start("instructionsScene");
+            });
+        });
+  
+        // boucing title letters
+        let words = ["TYPING", "TUTOR", "TURBO"];
+        let rowSpacing = 120;
+        let startingY = centerY - ((words.length - 1) * rowSpacing) / 2;
+  
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+            let rowY = startingY + i * rowSpacing;
+            let startX = centerX - (word.length * 100) / 2;
+            for (let j = 0; j < word.length; j++) {
+                let char = word[j];
+                let letterIndex = char.charCodeAt(0) - 65;
+                let variant = Phaser.Math.Between(0, 4);
+                let frame = letterIndex * 13 + variant;
+                let letterSprite = this.add.sprite(startX + j * 100 + 50, rowY + 50, 'letters', frame);
+  
+                this.tweens.add({
+                    targets: letterSprite,
+                    y: letterSprite.y + 20,
+                    ease: 'Sine.inOut',
+                    duration: 800,
+                    yoyo: true,
+                    repeat: -1,
+                    delay: Phaser.Math.Between(0, 500)
+                });
+            }
+        }
+  
+        // bottom label
+        let textY = startingY + 2 * rowSpacing + 250;
+        let instructions = "Press SPACE to play\nPress I for instructions";
+        let instructionText = this.add.text(centerX, textY, instructions, {
+            fontFamily: 'Comic Sans MS',
+            fontSize: '36px',
+            fill: '#ffffff',
+            align: 'center'
+        });
+        instructionText.setOrigin(0.5);
+        instructionText.setPadding(0, 0, 0, 10);
+    }
 }
-
+  
 window.Menu = Menu;
