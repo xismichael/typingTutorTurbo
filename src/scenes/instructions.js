@@ -10,6 +10,12 @@ class Instructions extends Phaser.Scene {
     let centerX = this.cameras.main.width / 2;
     let centerY = this.cameras.main.height / 2;
 
+    // Continue playing menu music if it exists
+    this.menuMusic = this.game.registry.get('menuMusic');
+    if (this.menuMusic && !this.menuMusic.isPlaying) {
+      this.menuMusic.play();
+    }
+
     // Header
     let header = this.add.text(centerX, centerY - 400, "How to Play", {
       fontFamily: 'Comic Sans MS',

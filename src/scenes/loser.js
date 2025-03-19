@@ -89,6 +89,12 @@ class Loser extends Phaser.Scene {
         this.statsMusic.stop();
       }
 
+      // Start menu music before returning to menu
+      let menuMusic = this.game.registry.get('menuMusic');
+      if (menuMusic && !menuMusic.isPlaying) {
+        menuMusic.play();
+      }
+
       this.cameras.main.fadeOut(500, 0, 0, 0);
     });
 

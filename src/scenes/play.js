@@ -37,6 +37,12 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+        // Stop menu music if it's playing
+        this.menuMusic = this.game.registry.get('menuMusic');
+        if (this.menuMusic && this.menuMusic.isPlaying) {
+            this.menuMusic.stop();
+        }
+
         // Retrieve the word list from the JSON file
         this.wordList = this.cache.json.get('wordList');
 
@@ -105,7 +111,7 @@ class Play extends Phaser.Scene {
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
 
         // 3 Minute Timer
-        this.timeRemaining = 5;
+        this.timeRemaining = 180;
         let commonTextConfig = {
             fontFamily: 'Comic Sans MS, Arial, sans-serif',
             fontSize: '64px',

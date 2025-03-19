@@ -6,6 +6,8 @@ class Menu extends Phaser.Scene {
     preload() {
         this.load.image('menu', './assets/menu.png');
         this.load.spritesheet('letters', './assets/A-Z.png', { frameWidth: 100, frameHeight: 100 });
+        // Load menu music
+        this.load.audio("menuMusic", "assets/menu.mp3");
     }
   
     create() {
@@ -15,8 +17,25 @@ class Menu extends Phaser.Scene {
         let bg = this.add.image(centerX, centerY, 'menu').setOrigin(0.5, 0.5);
         bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
   
+        // Create and play menu music - adding as a global audio
+        if (!this.sound.get("menuMusic")) {
+            this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.3 });
+            this.menuMusic.play();
+            // Make it accessible globally
+            this.game.registry.set('menuMusic', this.menuMusic);
+        } else {
+            this.menuMusic = this.game.registry.get('menuMusic');
+            if (!this.menuMusic.isPlaying) {
+                this.menuMusic.play();
+            }
+        }
+  
         // space, I and C keys with fade-out transitions
         this.input.keyboard.on("keydown-SPACE", () => {
+            // Stop menu music before transitioning to play scene
+            if (this.menuMusic && this.menuMusic.isPlaying) {
+                this.menuMusic.stop();
+            }
             this.cameras.main.fadeOut(500, 0, 0, 0);
             this.cameras.main.once('camerafadeoutcomplete', () => {
                 this.scene.start("playScene");
@@ -89,6 +108,8 @@ class Menu extends Phaser.Scene {
             repeat: -1
         });
     }
+
+
 }
   
 window.Menu = Menu;

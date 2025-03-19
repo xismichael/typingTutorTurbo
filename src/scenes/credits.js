@@ -13,6 +13,12 @@ class Credits extends Phaser.Scene {
         let centerX = this.cameras.main.width / 2;
         let centerY = this.cameras.main.height / 2;
   
+        // Continue playing menu music if it exists
+        this.menuMusic = this.game.registry.get('menuMusic');
+        if (this.menuMusic && !this.menuMusic.isPlaying) {
+            this.menuMusic.play();
+        }
+
         // Create the left image
         let leftImage = this.add.image(200, centerY, 'arcade').setOrigin(0.5);
         leftImage.setDisplaySize(450, 300); 
@@ -25,9 +31,10 @@ class Credits extends Phaser.Scene {
         let creditsText = 
             "Credits\n\n" +
             "The Fake: Strong Bad Email\n\n" +
-            "Background Music: Pixabay\n\n" +
+            "Background Music: DJARTMUSIC\n\n" +
             "Sound Effects: Pixabay\n\n" +
-            "Art: Tony and Michael\n\n\n" +
+            "Art: Tony and Michael\n\n" +
+            "Stat Screen Music: Daniel Sadowski\n\n\n" +
             "Press C to Return to Menu";
   
         let text = this.add.text(centerX, centerY, creditsText, {
