@@ -57,7 +57,6 @@ class Play extends Phaser.Scene {
             this.bgMusic = this.sound.get("backgroundMusic");
         }
 
-
         // Initialize counters
         this.shieldsBroken = 0;
         this.wordsCompleted = 0;
@@ -78,12 +77,9 @@ class Play extends Phaser.Scene {
             this.typosMade++;
         });
 
-
-
         this.score = 0;
         this.combo = 1;
         this.maxCombo = 2;
-
 
         //    letterBoxX, letterBoxY, letterBoxHeight, pointerBar, UIbar, gameWidth, gameHeight
         let row = [
@@ -129,7 +125,7 @@ class Play extends Phaser.Scene {
         };
 
         // Create Timer Text
-        this.timerText = this.add.text(pointerBar / 2, UIbar / 2, "Time: 2:00", commonTextConfig).setOrigin(0, 0);
+        this.timerText = this.add.text(pointerBar / 2, UIbar / 2, "Time: 3:00", commonTextConfig).setOrigin(0, 0.5);
         this.time.addEvent({
             delay: 1000,
             callback: this.updateTimer,
@@ -137,8 +133,18 @@ class Play extends Phaser.Scene {
             loop: true
         });
 
-        // Create Score Text
-        this.scoreText = this.add.text(gameWidth / 2, UIbar / 2, `Score: ${this.score}`, commonTextConfig).setOrigin(0, 0);
+        // Create Score Text 
+        this.scoreText = this.add.text(gameWidth / 2, UIbar / 2, `Score: ${this.score}`, commonTextConfig).setOrigin(0.7, 0.5);
+
+
+        // Retrieve high score from localStorage or default  0
+        this.highScore = parseInt(localStorage.getItem('typingTutorHighScore') || '0');
+        this.highScoreText = this.add.text(
+            gameWidth - 20,        // 20px from the right edge
+            UIbar / 2,
+            `High Score: ${this.highScore}`,
+            commonTextConfig
+        ).setOrigin(1, 0.5);
     }
 
     handleKeyPress(event) {
@@ -171,25 +177,29 @@ class Play extends Phaser.Scene {
                 ease: "Power2"
             });
         });
-        // If fewer than 5 words remain, add a new word in the bottom row
+        // Leave the last row empty
         if (this.words.length < 5) {
-            new Word(
-                this,
-                letterBoxX + 50,
-                letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4,
-                this.getRandomWord(),
-                "letterSheet",
-                "underline"
-            );
+            new Word(this, letterBoxX + 50, letterBoxY + letterBoxHeight / 2 + letterBoxHeight * 4, this.getRandomWord(), "letterSheet", "underline");
         }
     }
 
-    getRandomWord() {
-        let randomIndex = Math.floor(Math.random() * this.wordList.length);
-        return this.wordList[randomIndex];
+    updateTimer() {
+        this.timeRemaining--;
+        let minutes = Math.floor(this.timeRemaining / 60);
+        let seconds = this.timeRemaining % 60;
+        this.timerText.setText("Time: " + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds));
+        if (this.timeRemaining <= 0) {
+            // Pass stats to Loser scene
+            this.scene.start("loserScene", {
+                score: this.score,
+                wordsCompleted: this.wordsCompleted,
+                shieldsBroken: this.shieldsBroken,
+                typosMade: this.typosMade
+            });
+        }
     }
 
-    //  scoring logic
+    //  scoring logic 
     addPoints(points) {
         this.score += Math.floor(points * this.combo);
         this.combo = Math.min(this.combo + 0.05, this.maxCombo);
@@ -206,20 +216,27 @@ class Play extends Phaser.Scene {
         this.scoreText.setText(`Score: ${this.score}`);
     }
 
-    //Timper update
-    updateTimer() {
-        this.timeRemaining--;
-        let minutes = Math.floor(this.timeRemaining / 60);
-        let seconds = this.timeRemaining % 60;
-        this.timerText.setText("Time: " + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds));
-        if (this.timeRemaining <= 0) {
-            // Pass stats to Loser scene
-            this.scene.start("loserScene", {
-                score: this.score,
-                wordsCompleted: this.wordsCompleted,
-                shieldsBroken: this.shieldsBroken,
-                typosMade: this.typosMade
-            });
+    endGame() {
+        // Pass data to Loser scene
+        this.scene.start("loserScene", {
+            score: this.score,
+            wordsCompleted: this.wordsCompleted,
+            shieldsBroken: this.shieldsBroken,
+            typosMade: this.typosMade
+        });
+    }
+
+    getRandomWord() {
+        let randomIndex = Math.floor(Math.random() * this.wordList.length);
+        return this.wordList[randomIndex];
+    }
+
+    update(time, delta) {
+        //updates new high score
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('typingTutorHighScore', this.highScore);
+            this.highScoreText.setText(`High Score: ${this.highScore}`);
         }
     }
 }
