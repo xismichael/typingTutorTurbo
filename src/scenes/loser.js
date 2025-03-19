@@ -65,11 +65,14 @@ class Loser extends Phaser.Scene {
     };
 
     // space to play again
-    let instructionText = this.add.text(centerX, centerY + 200, "Press SPACE to play again", instructionStyle);
+    let instructionText = this.add.text(centerX, centerY + 200, "Press SPACE to return to menu", instructionStyle);
     instructionText.setOrigin(0.5);
 
     // space to return to menu
     this.input.keyboard.once("keydown-SPACE", () => {
+      this.cameras.main.fadeOut(500, 0, 0, 0);
+    });
+    this.cameras.main.once('camerafadeoutcomplete', () => {
       this.scene.start("menuScene");
     });
   }
