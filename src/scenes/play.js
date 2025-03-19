@@ -49,13 +49,12 @@ class Play extends Phaser.Scene {
             wordComplete: this.sound.add("wordComplete")
         };
 
-        // Start background music if not already playing
-        if (!this.sound.get("backgroundMusic")) {
-            this.bgMusic = this.sound.add("backgroundMusic", { loop: true, volume: 0.2 });
-            this.bgMusic.play();
-        } else {
-            this.bgMusic = this.sound.get("backgroundMusic");
+        if (this.sound.get("backgroundMusic")) {
+            this.sound.removeByKey("backgroundMusic"); // Ensure old music is removed
         }
+        
+        this.bgMusic = this.sound.add("backgroundMusic", { loop: true, volume: 0.2 });
+        this.bgMusic.play();
 
         // Initialize counters
         this.shieldsBroken = 0;
@@ -106,7 +105,7 @@ class Play extends Phaser.Scene {
         this.input.keyboard.on("keydown", this.handleKeyPress, this);
 
         // 3 Minute Timer
-        this.timeRemaining = 180;
+        this.timeRemaining = 5;
         let commonTextConfig = {
             fontFamily: 'Comic Sans MS, Arial, sans-serif',
             fontSize: '64px',
@@ -189,7 +188,12 @@ class Play extends Phaser.Scene {
         let seconds = this.timeRemaining % 60;
         this.timerText.setText("Time: " + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds));
         if (this.timeRemaining <= 0) {
-            // Pass stats to Loser scene
+            // Stop background music when time runs out
+            if (this.bgMusic && this.bgMusic.isPlaying) {
+                this.bgMusic.stop();
+            }
+        
+            // Transition to Loser Scene with stats
             this.scene.start("loserScene", {
                 score: this.score,
                 wordsCompleted: this.wordsCompleted,
@@ -217,7 +221,12 @@ class Play extends Phaser.Scene {
     }
 
     endGame() {
-        // Pass data to Loser scene
+        // Stop background music if it's playing
+        if (this.bgMusic && this.bgMusic.isPlaying) {
+            this.bgMusic.stop();
+        }
+    
+        // Transition to Loser Scene with stats
         this.scene.start("loserScene", {
             score: this.score,
             wordsCompleted: this.wordsCompleted,
