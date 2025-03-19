@@ -1,4 +1,5 @@
-//thwjgwgwkbwhgbw
+//Tony Yu
+//Michael Xi
 let config = {
     type: Phaser.AUTO,
     // width: Math.floor(window.innerWidth * 0.75),
@@ -14,7 +15,7 @@ let config = {
             debug: false
         }
     },
-    scene: [Menu, Play, Instructions, Loser],
+    scene: [Menu, Play, Instructions, Credits, Loser],
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH // centers the game on the screen
     }

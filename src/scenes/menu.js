@@ -1,3 +1,4 @@
+// Updated menu.js
 class Menu extends Phaser.Scene {
     constructor() {
         super({ key: 'menuScene' });
@@ -15,7 +16,7 @@ class Menu extends Phaser.Scene {
         let bg = this.add.image(centerX, centerY, 'menu').setOrigin(0.5, 0.5);
         bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
   
-        // space and I keys with fade-out transitions
+        // space, I and C keys with fade-out transitions
         this.input.keyboard.on("keydown-SPACE", () => {
             this.cameras.main.fadeOut(500, 0, 0, 0);
             this.cameras.main.once('camerafadeoutcomplete', () => {
@@ -28,8 +29,14 @@ class Menu extends Phaser.Scene {
                 this.scene.start("instructionsScene");
             });
         });
+        this.input.keyboard.on("keydown-C", () => {
+            this.cameras.main.fadeOut(500, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start("creditsScene");
+            });
+        });
   
-        // boucing title letters
+        // bouncing title letters
         let words = ["TYPING", "TUTOR", "TURBO"];
         let rowSpacing = 120;
         let startingY = centerY - ((words.length - 1) * rowSpacing) / 2;
@@ -57,9 +64,9 @@ class Menu extends Phaser.Scene {
             }
         }
   
-        // bottom label
+        // bottom label text
         let textY = startingY + 2 * rowSpacing + 250;
-        let instructions = "Press SPACE to play\nPress I for instructions";
+        let instructions = "Press SPACE to play\nPress I for instructions\nPress C for credits";
         let instructionText = this.add.text(centerX, textY, instructions, {
             fontFamily: 'Comic Sans MS',
             fontSize: '36px',
