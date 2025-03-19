@@ -134,7 +134,7 @@ class Play extends Phaser.Scene {
         });
 
         // Create Score Text 
-        this.scoreText = this.add.text(gameWidth / 2, UIbar / 2, `Score: ${this.score}`, commonTextConfig).setOrigin(0.7, 0.5);
+        this.scoreText = this.add.text(gameWidth / 2, UIbar / 2, `Score: ${this.score}`, commonTextConfig).setOrigin(0.8, 0.5);
 
 
         // Retrieve high score from localStorage or default  0

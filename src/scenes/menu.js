@@ -66,15 +66,29 @@ class Menu extends Phaser.Scene {
   
         // bottom label text
         let textY = startingY + 2 * rowSpacing + 250;
-        let instructions = "Press SPACE to play\nPress I for instructions\nPress C for credits";
+        let instructions = "Press SPACE to play\n I ---> Tutorial C ---> for Credits";
         let instructionText = this.add.text(centerX, textY, instructions, {
             fontFamily: 'Comic Sans MS',
-            fontSize: '36px',
+            fontSize: '28px',  // Smaller font size
             fill: '#ffffff',
-            align: 'center'
+            align: 'center',
+            padding: {
+                x: 19,
+                y: 19
+            }
         });
         instructionText.setOrigin(0.5);
         instructionText.setPadding(0, 0, 0, 10);
+  
+        // make the text pulsate by scaling up and down
+        this.tweens.add({
+            targets: instructionText,
+            scale: 1.1,         
+            ease: 'Sine.inOut',
+            duration: 1200,
+            yoyo: true,
+            repeat: -1
+        });
     }
 }
   
